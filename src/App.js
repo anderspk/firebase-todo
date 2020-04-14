@@ -3,6 +3,8 @@ import "./App.css";
 import { useState } from "react";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import CreateList from "./components/CreateList/CreateList";
+import { useEffect } from "react";
+import { authenticateAnonymously } from "./firebase";
 
 const App = () => {
   const [user, setUser] = useState();
@@ -10,7 +12,24 @@ const App = () => {
   const [todoList, setTodoList] = useState();
   const [error, setError] = useState();
 
-  const [todoListId, setTodoListId] = [1, 2];
+  const [todoListId, setTodoListId] = useState();
+
+  useEffect(() => {
+    const authenticate = async () => {
+      try {
+        const userCredential = await authenticateAnonymously().catch(() => {
+          throw Error("Anonymous auth failed");
+        });
+        setUserId(userCredential.user.uid);
+        if (todoListId) {
+          console.log("wut");
+        }
+      } catch (error) {
+        setError(error);
+      }
+    };
+    authenticate();
+  }, [todoListId]);
 
   const onTodoListCreate = (todoListId, username) => {
     setTodoListId(todoListId);
@@ -30,7 +49,7 @@ const App = () => {
   if (todoList && user) {
     return <div>EditList</div>;
   } else if (todoList) {
-    return <div>Error</div>;
+    return <div>Errah</div>;
   }
   return (
     <div>

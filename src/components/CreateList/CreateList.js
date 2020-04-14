@@ -1,15 +1,15 @@
 import React from "react";
 import { useState } from "react";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import { createTodoList } from "../../firebase";
 
 const CreateList = ({ onCreate, userId }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState();
 
-  const createTodoList = async (e) => {
+  const onSubmitUsername = async (e) => {
     e.preventDefault();
     setError();
-
     if (!username) {
       setError("Username is required");
       return;
@@ -40,7 +40,7 @@ const CreateList = ({ onCreate, userId }) => {
             onChange={(e) => setUsername(e.target.value)}
           />
           <ErrorMessage>{error}</ErrorMessage>
-          <button onClick={createTodoList}>Create new todo list</button>
+          <button onClick={onSubmitUsername}>Create new todo list</button>
         </form>
       </div>
     </div>
