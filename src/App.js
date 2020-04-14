@@ -1,5 +1,8 @@
 import React from "react";
 import "./App.css";
+import { useState } from "react";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import CreateList from "./components/CreateList/CreateList";
 
 const App = () => {
   const [user, setUser] = useState();
@@ -31,8 +34,8 @@ const App = () => {
   }
   return (
     <div>
-      <p>Error</p>
-      <p>List</p>
+      <ErrorMessage>{error}</ErrorMessage>
+      <CreateList onCreate={onTodoListCreate} userId={userId} />
     </div>
   );
 };

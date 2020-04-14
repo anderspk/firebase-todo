@@ -12,3 +12,17 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 const firestore = firebase.firestore();
+
+export const authenticateAnonymously = () => firebase.auth().signInAnonymously;
+
+export const createTodoList = (username, userId) =>
+  firestore.collection("todoLists").add({
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy: userId,
+    users: [
+      {
+        userId: userId,
+        name: username,
+      },
+    ],
+  });
