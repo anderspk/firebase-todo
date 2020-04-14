@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 
 const useQueryString = (key) => {
+  // eslint-disable-next-line no-use-before-define
   const [paramValue, setParamValue] = useState(getQueryParamValue(key));
 
   const onSetValue = useCallback(
@@ -8,7 +9,7 @@ const useQueryString = (key) => {
       setParamValue(newValue);
       updateQueryStringWithoutReload(newValue ? `${key}=${newValue}` : "");
     },
-    [key, setParamValue]
+    [key]
   );
 
   const getQueryParamValue = (key) =>
