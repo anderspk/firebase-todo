@@ -5,6 +5,7 @@ import * as firebase from "./firebase";
 import useQueryString from "./hooks/useQueryString";
 import "./App.css";
 import EditList from "./components/EditList/EditList";
+import JoinList from "./components/JoinList/JoinList";
 
 const App = () => {
   const [user, setUser] = useState();
@@ -46,20 +47,21 @@ const App = () => {
     setUser(username);
   };
 
-  const onCloseTodoList = () => {
-    setTodoListId();
-    setTodoList();
-    setUser();
-  };
-
   const onSelectUser = (username) => {
     setUser(username);
   };
 
+  console.log({ todoList, user });
+
   if (todoList && user) {
     return <EditList user={user} todoListId={todoListId} />;
   } else if (todoList) {
-    return <div>Join List</div>;
+    return (
+      <JoinList
+        users={todoList.users}
+        {...{ userId, todoListId, onSelectUser }}
+      />
+    );
   }
   return (
     <div>

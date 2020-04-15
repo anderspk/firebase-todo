@@ -77,3 +77,14 @@ export const deleteTodo = async (todoId, todoListId) => {
     .doc(todoId)
     .delete();
 };
+
+export const addUserToList = (todoListId, username, userId) =>
+  firestore
+    .collection("todoLists")
+    .doc(todoListId)
+    .update({
+      users: firebase.firestore.FieldValue.arrayUnion({
+        userId,
+        name: username,
+      }),
+    });
