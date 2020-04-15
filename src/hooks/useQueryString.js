@@ -12,8 +12,9 @@ const useQueryString = (key) => {
     [key]
   );
 
-  const getQueryParamValue = (key) =>
-    new URLSearchParams(window.location.search).get(key);
+  function getQueryParamValue(key) {
+    return new URLSearchParams(window.location.search).get(key);
+  }
 
   const updateQueryStringWithoutReload = (queryString) => {
     const { protocol, host, pathname } = window.location;

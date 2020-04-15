@@ -1,6 +1,7 @@
 import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
+import AsyncError from "./utils/AsyncError";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAD9sFNWbXV9i_l3G9egskX9dmTQuVfPtg",
@@ -32,3 +33,47 @@ export const createTodoList = (username, userId) =>
       },
     ],
   });
+
+export const getTodoList = (todoListId) =>
+  firestore.collection("todoLists").doc(todoListId).get();
+
+export const getTodoListItems = (todoListId) =>
+  firestore.collection("todoLists").doc(todoListId).collection("items").get();
+
+export const addNewTodo = async (newTodo, todoListId, userId) => {
+  const querySnapshot = await getTodoListItems(todoListId).catch(AsyncError);
+  const todoListItems = await querySnapshot.docs;
+  const matchingItem = todoListItems.find(
+    (todoListItem) =>
+      todoListItem.data().name.toLowerCase() === newTodo.toLowerCase()
+  );
+
+  if (!matchingItem) {
+    return firestore
+      .collection("todoLists")
+      .doc(todoListId)
+      .collection("items")
+      .add({
+        name: newTodo,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: userId,
+      });
+  } else throw new Error("Item already exists in list!");
+};
+
+export const streamTodoList = (todoListId, observer) =>
+  firestore
+    .collection("todoLists")
+    .doc(todoListId)
+    .collection("items")
+    .orderBy("created")
+    .onSnapshot(observer);
+
+export const deleteTodo = async (todoId, todoListId) => {
+  firestore
+    .collection("todoLists")
+    .doc(todoListId)
+    .collection("items")
+    .doc(todoId)
+    .delete();
+};

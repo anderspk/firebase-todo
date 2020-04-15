@@ -1,10 +1,10 @@
-import React from "react";
-import "./App.css";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import CreateList from "./components/CreateList/CreateList";
-import { useEffect } from "react";
-import { authenticateAnonymously } from "./firebase";
+import * as firebase from "./firebase";
+import useQueryString from "./hooks/useQueryString";
+import "./App.css";
+import EditList from "./components/EditList/EditList";
 
 const App = () => {
   const [user, setUser] = useState();
@@ -12,24 +12,34 @@ const App = () => {
   const [todoList, setTodoList] = useState();
   const [error, setError] = useState();
 
-  const [todoListId, setTodoListId] = useState();
+  const [todoListId, setTodoListId] = useQueryString("listId");
 
   useEffect(() => {
     const authenticate = async () => {
       try {
-        const userCredential = await authenticateAnonymously().catch(() => {
-          throw Error("Anonymous auth failed");
-        });
+        const userCredential = await firebase
+          .authenticateAnonymously()
+          .catch(() => {
+            throw Error("Anonymous auth failed");
+          });
+
         setUserId(userCredential.user.uid);
         if (todoListId) {
-          console.log("wut");
+          const fbTodoList = await firebase.getTodoList(todoListId);
+          if (fbTodoList.exists) {
+            setError(null);
+            setTodoList(fbTodoList.data());
+          } else {
+            setTodoListId();
+            throw Error("Todolist not found");
+          }
         }
       } catch (error) {
         setError(error);
       }
     };
     authenticate();
-  }, [todoListId]);
+  }, [todoListId, setTodoListId]);
 
   const onTodoListCreate = (todoListId, username) => {
     setTodoListId(todoListId);
@@ -47,9 +57,9 @@ const App = () => {
   };
 
   if (todoList && user) {
-    return <div>EditList</div>;
+    return <EditList user={user} todoListId={todoListId} />;
   } else if (todoList) {
-    return <div>Errah</div>;
+    return <div>Join List</div>;
   }
   return (
     <div>
